@@ -6,9 +6,10 @@ module.exports = {
   port: 3000,
   db: {
     schemas,
-    url: 'mongodb://admin:1234@ds239911.mlab.com:39911/myplayground',
+    url: 'mongodb://admin:qwer1234@ds239911.mlab.com:39911/myplayground',
     options: {
-      autoReconnect: true
+      autoReconnect: true,
+      useNewUrlParser: true
     }
   },
 }

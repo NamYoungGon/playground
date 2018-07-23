@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+  <div id="login-state"></div>
+  <div id="login-pnl">
+    <input type="text" id="email" />
+    <input type="password" id="password" />
+    <button id="login">Login</button>
+  </div>
+  <div id="logout-pnl">
+    <h2></h2>
+    <button id="logout">Logout</button>
+  </div>
+    <script>
+      $(document).ready(function () {
+        const request = $.ajax({
+          type: 'get',
+          url: 'http://10.10.26.50:3000/api/user/login'
+        });
+  
+        request.done(function (res) {
+          console.log('자동 로그인 성공');
+          console.log(res);
+        });
+
+        login.addEventListener('click', function () {
+          const request = $.ajax({
+            type: 'post',
+            url: 'http://10.10.26.50:3000/api/user/login',
+            data: {
+              email: email.value,
+              password: password.value
+            }
+          });
+    
+          request.done(function (res) {
+            console.log('로그인 성공');
+            console.log(res);
+          });
+        })
+  
+        logout.addEventListener('click', function () {
+          const request = $.ajax({
+            type: 'get',
+            url: 'http://10.10.26.50:3000/api/user/logout'
+          });
+    
+          request.done(function (res) {
+            console.log('로그아웃 성공');
+            console.log(res);
+          });
+        })
+      })
+
+    </script>
+</body>
+</html>

@@ -12,7 +12,7 @@ async function register(req, res) {
   if (database) {
     try {
       const user = new database.UserModel({ email, password, nickname });
-      const result = await user.save()
+      const result = await user.save();
 
       if (result) {
         res.json({
@@ -52,9 +52,15 @@ async function login(req, res) {
         authenticated = user.authenticate(password, result);
 
         if (authenticated) {
+          res.cookie('playground', JSON.stringify({
+            email,
+            authorized: true
+          }));
+
           res.json({
             success: true
           });
+
         } else {
           res.json({
             success: false
@@ -73,7 +79,45 @@ async function login(req, res) {
   }
 }
 
+/**
+ * 로그인 (자동 로그인)
+ */
+function login_auto(req, res) {
+  const database = req.app.get('database');
+
+  if (database) {
+    const cookiePlayground = req.cookies.playground;
+    if (cookiePlayground) {
+      const userObj = JSON.parse(cookiePlayground);
+      res.json({
+        success: true
+      });
+    } else {
+      res.json({
+        success: false
+      });
+    }
+  } else {
+    res.json({
+      success: false
+    });
+  }
+}
+
+/**
+ * 로그아웃
+ */
+function logout(req, res) {
+  res.clearCookie('playground');
+
+  res.json({
+    success: true
+  });
+}
+
 module.exports = {
   register,
-  login
+  login,
+  login_auto,
+  logout
 }

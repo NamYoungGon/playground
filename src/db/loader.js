@@ -3,35 +3,35 @@ const autoIncrement = require('mongoose-auto-increment');
 
 const loader = {};
 
-loader.init = (app, config) => {
-  connect(app, config);
+loader.init = (app, db) => {
+  connect(app, db);
 }
 
-function connect(app, config) {
-  mongoose.Promise = global.Promise;
-  mongoose.connect(config.db.url, config.db.options);
-  autoIncrement.initialize(mongoose.connection);
-  loader.db = mongoose.connection;
+function connect(app, db) {
+  const { url, options } = db;
+  mongoose.connect(url, options);
+  const database = loader.db = mongoose.connection;
+  autoIncrement.initialize(database);
 
   // 데이터베이스 연결 시 동작
-  loader.db.on('open', () => {
-    console.log(`데이터베이스에 연결됨 : ${config.db.url}`);
-  })
+  database.on('open', () => {
+    console.log(`데이터베이스에 연결됨 : ${url}`);
+  });
 
-  createSchema(app, config);
-
-  loader.db.on('disconnected', () => {
+  database.on('disconnected', () => {
     console.log('데이터베이스 연결 해제');
-  })
+  });
+  
+  database.on('error', console.error.bind(console.log, 'mongoose 연결 에러'));
 
-  loader.db.on('error', console.error.bind(console.log, 'mongoose 연결 에러'));
+  createSchema(app, db);
 }
 
-function createSchema(app, config) {
+function createSchema(app, { schemas }) {
   let curSchema;
   let curModel;
 
-  config.db.schemas.forEach((d, i) => {
+  schemas.forEach((d, i) => {
     const { file, collection, schemaName, modelName } = d;
 
     curSchema = require(file).createSchema(mongoose, autoIncrement);
